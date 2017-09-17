@@ -1,0 +1,5 @@
+## Interface: 73000
+## Title: CursorFinder
+## Author: d87
+## Notes: Visible in combat cursor
+cursor.lua
