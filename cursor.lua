@@ -1,6 +1,6 @@
 local addonName, addonTable = ...
 
-local f = CreateFrame("Frame", "CursorFinder")
+local f = CreateFrame("Frame", "CursorFinder", UIParent)
 
 f:SetScript("OnEvent", function(self, event, ...)
     return self[event](self, event, ...)
@@ -12,6 +12,7 @@ local gOffsetY = 0
 
 function f:PLAYER_LOGIN()
     self:Create()
+    -- C_Timer.After(3, function() self:Create() end)
 end
 
 function f:SPELLS_CHANGED(event)
@@ -51,6 +52,21 @@ f:RegisterEvent("PLAYER_LOGIN")
 --     end
 -- end
 
+local Redraw = function(self)
+    if not self.model_path then return end
+
+    -- self:SetModelScale(1)
+    -- self:SetPosition(0,0,0)
+
+    -- if type(self.model_path) == "number" then
+        -- self:SetDisplayInfo(self.model_path)
+    -- else
+    self:SetModel(self.model_path)
+    if self.transformations then
+        self:SetTransform(unpack(self.transformations))
+    end
+end
+
 
 
 function f:Create()
@@ -61,29 +77,38 @@ function f:Create()
     f:SetHeight(100)
 
     local f1 = CreateFrame("PlayerModel", "CursorFinderLayer1",f)
+    f1.model_path = "spells/7fx_nightmare_missile.m2"
     f1:SetModel("spells/7fx_nightmare_missile.m2")
     f1:SetWidth(100)
     f1:SetHeight(100)
-    f1:SetTransform(0.0325,0.0295,0, rad(0), rad(0), rad(0), 0.0175)
+    f1.transformations = {0.0325,0.0295,0, rad(0), rad(0), rad(0), 0.0175}
+    f1:SetTransform(unpack(f1.transformations))
     f1:SetAlpha(1)
-    f1:SetPoint("CENTER",10, -5)
+    f1:SetPoint("CENTER",0, -18)
     f1:SetFrameStrata("BACKGROUND")
+    f1:SetScript("OnShow", Redraw)
+
     f.layer1 = f1
 
     local rad = math.rad
 
     local f2 = CreateFrame("PlayerModel", "CursorFinderLayer2",f)
+    f2.model_path = "spells/blessingoffreedom_state.m2"
     f2:SetModel("spells/blessingoffreedom_state.m2")
     f2:SetWidth(60)
     f2:SetHeight(60)
-    f2:SetTransform(0.02,0.0168,0, rad(90), rad(270), rad(270), 0.006)
+    f2.transformations = {0.02,0.0168,0, rad(90), rad(270), rad(270), 0.006}
+    f2:SetTransform(unpack(f2.transformations))
     f2:SetAlpha(1)
-    f2:SetPoint("CENTER",10, -5)
+    f2:SetPoint("CENTER",3, -15)
     f2:SetFrameStrata("BACKGROUND")
     f2:SetFrameLevel(3)
+    f2:SetScript("OnShow", Redraw)
+
     f.layer2 = f2
 
     local f3 = CreateFrame("PlayerModel", "CursorFinderLayer3",f)
+    f3.model_path = "spells/lightningbolt_missile.m2"
     f3:SetModel("spells/lightningbolt_missile.m2")
     f3:SetWidth(30)
     f3:SetHeight(30)
@@ -91,6 +116,8 @@ function f:Create()
     f3:SetAlpha(1)
     f3:SetPoint("CENTER",0,0)
     f3:SetFrameStrata("TOOLTIP")
+    f3:SetScript("OnShow", Redraw)
+
     f.layer3 = f3
 
     local previousX
@@ -101,7 +128,9 @@ function f:Create()
             return
         end
 
-        self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", cursorX+gOffsetX, cursorY+gOffsetY)
+        local uiScale = 1/UIParent:GetEffectiveScale()
+
+        self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", (cursorX+gOffsetX)*uiScale, (cursorY+gOffsetY)*uiScale)
 
         previousX = cursorX
         previousY = cursorY
