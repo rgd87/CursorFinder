@@ -10,9 +10,11 @@ local gOffsetX = 0
 local gOffsetY = 0
 
 
-function f:PLAYER_LOGIN()
-    self:Create()
-    -- C_Timer.After(3, function() self:Create() end)
+function f:ADDON_LOADED(event, addon)
+    if addon == addonName then
+        self:Create()
+    end
+    -- C_Timer.After(10, function() print("asdf"); self:Create() end)
 end
 
 function f:SPELLS_CHANGED(event)
@@ -27,30 +29,7 @@ function f:SPELLS_CHANGED(event)
 end
 
 f:RegisterEvent("SPELLS_CHANGED")
-f:RegisterEvent("PLAYER_LOGIN")
-
-
-
--- function f:Enable()
---     -- self:RegisterEvent("PLAYER_ENTERING_WORLD")
---     -- self:RegisterUnitEvent("UNIT_AURA", "player")
---     -- self:RegisterEvent("QUEST_ACCEPTED")
---     -- self:RegisterEvent("QUEST_FINISHED") 
---     -- self:RegisterEvent("MERCHANT_CLOSED")
---     self:RegisterEvent("LOOT_CLOSED")
---     if not ticker then
---         ticker = C_Timer.NewTicker(5, unsheath)
---     end
--- end
-
--- function f:Disable()
---     -- self:UnregisterEvent("MERCHANT_CLOSED")
---     self:UnregisterEvent("LOOT_CLOSED")
---     if ticker then
---         ticker:Cancel()
---         ticker = nil
---     end
--- end
+f:RegisterEvent("ADDON_LOADED")
 
 local Redraw = function(self)
     if not self.model_path then return end
@@ -62,11 +41,46 @@ local Redraw = function(self)
         -- self:SetDisplayInfo(self.model_path)
     -- else
     self:SetModel(self.model_path)
-    if self.transformations then
-        self:SetTransform(unpack(self.transformations))
-    end
 end
 
+local Clear = function(self)
+    self:SetModel("spells/lightningbolt_missile.m2")
+    self:ClearTransform()
+end
+
+-- again, the trick is to apply transformations after the model already has been rendered,
+-- otherwise it'll not show on the initial login
+local modelsToReset = {}
+local nextrender_frame = CreateFrame("Frame")
+local nextrender_counter = 2
+local nextrender_func = function()
+    if nextrender_counter > 0 then
+        nextrender_counter = nextrender_counter - 1
+        return
+    end
+
+    while next(modelsToReset) do
+        local pm = next(modelsToReset)
+        modelsToReset[pm] = nil
+        if pm.transformations then
+            pm:SetTransform(unpack(pm.transformations))
+            pm:SetAlpha(1)
+        end
+    end
+    nextrender_frame:SetScript("OnUpdate", nil)
+    nextrender_counter = 2
+end
+
+nextrender_frame.enqueue = function(self, frame)
+    modelsToReset[frame] = true
+    frame:SetAlpha(0)
+    nextrender_frame:SetScript("OnUpdate", nextrender_func)
+    nextrender_counter = 5
+end
+
+nextrender_frame.dequeue = function(self, frame)
+    modelsToReset[frame] = nil
+end
 
 
 function f:Create()
@@ -82,11 +96,13 @@ function f:Create()
     f1:SetWidth(100)
     f1:SetHeight(100)
     f1.transformations = {0.0325,0.0295,0, rad(0), rad(0), rad(0), 0.0175}
-    f1:SetTransform(unpack(f1.transformations))
-    f1:SetAlpha(1)
+    nextrender_frame:enqueue(f1)
+    -- f1:SetTransform(unpack(f1.transformations))
+    -- f1:SetAlpha(1)
     f1:SetPoint("CENTER",0, -18)
     f1:SetFrameStrata("BACKGROUND")
     f1:SetScript("OnShow", Redraw)
+    f1:SetScript("OnHide", Clear)
 
     f.layer1 = f1
 
@@ -98,12 +114,15 @@ function f:Create()
     f2:SetWidth(60)
     f2:SetHeight(60)
     f2.transformations = {0.02,0.0168,0, rad(90), rad(270), rad(270), 0.006}
-    f2:SetTransform(unpack(f2.transformations))
-    f2:SetAlpha(1)
+    nextrender_frame:enqueue(f2)
+    -- f2:SetTransform(unpack(f2.transformations))
+    -- f2:SetAlpha(1)
     f2:SetPoint("CENTER",3, -15)
     f2:SetFrameStrata("BACKGROUND")
     f2:SetFrameLevel(3)
     f2:SetScript("OnShow", Redraw)
+    f2:SetScript("OnHide", Clear)
+    f2:Show()
 
     f.layer2 = f2
 
@@ -117,6 +136,7 @@ function f:Create()
     f3:SetPoint("CENTER",0,0)
     f3:SetFrameStrata("TOOLTIP")
     f3:SetScript("OnShow", Redraw)
+    f3:SetScript("OnHide", Clear)
 
     f.layer3 = f3
 
