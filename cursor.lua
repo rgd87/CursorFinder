@@ -31,23 +31,6 @@ end
 f:RegisterEvent("SPELLS_CHANGED")
 f:RegisterEvent("ADDON_LOADED")
 
-local Redraw = function(self)
-    if not self.model_path then return end
-
-    -- self:SetModelScale(1)
-    -- self:SetPosition(0,0,0)
-
-    -- if type(self.model_path) == "number" then
-        -- self:SetDisplayInfo(self.model_path)
-    -- else
-    self:SetModel(self.model_path)
-end
-
-local Clear = function(self)
-    self:SetModel("spells/lightningbolt_missile.m2")
-    self:ClearTransform()
-end
-
 -- again, the trick is to apply transformations after the model already has been rendered,
 -- otherwise it'll not show on the initial login
 local modelsToReset = {}
@@ -81,6 +64,26 @@ end
 nextrender_frame.dequeue = function(self, frame)
     modelsToReset[frame] = nil
 end
+
+local Redraw = function(self)
+    if not self.model_path then return end
+
+    -- self:SetModelScale(1)
+    -- self:SetPosition(0,0,0)
+
+    -- if type(self.model_path) == "number" then
+        -- self:SetDisplayInfo(self.model_path)
+    -- else
+    self:SetModel(self.model_path)
+    nextrender_frame:enqueue(self)
+end
+
+local Clear = function(self)
+    self:SetModel("spells/lightningbolt_missile.m2")
+    self:ClearTransform()
+end
+
+
 
 
 function f:Create()
