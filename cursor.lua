@@ -56,7 +56,9 @@ end
 
 nextrender_frame.enqueue = function(self, frame)
     modelsToReset[frame] = true
-    frame:SetAlpha(0)
+    if frame.transformations then
+        frame:SetAlpha(0)
+    end
     nextrender_frame:SetScript("OnUpdate", nextrender_func)
     nextrender_counter = 5
 end
