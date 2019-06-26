@@ -96,8 +96,8 @@ function f:Create()
     f:SetHeight(100)
 
     local f1 = CreateFrame("PlayerModel", "CursorFinderLayer1",f)
-    f1.model_path = "spells/7fx_nightmare_missile.m2"
-    f1:SetModel("spells/7fx_nightmare_missile.m2")
+    f1.model_path = 1327487
+    f1:SetModel(1327487)
     f1:SetWidth(100)
     f1:SetHeight(100)
     f1.transformations = {0.0325,0.0295,0, rad(0), rad(0), rad(0), 0.0175}
@@ -114,8 +114,8 @@ function f:Create()
     local rad = math.rad
 
     local f2 = CreateFrame("PlayerModel", "CursorFinderLayer2",f)
-    f2.model_path = "spells/blessingoffreedom_state.m2"
-    f2:SetModel("spells/blessingoffreedom_state.m2")
+    f2.model_path = 165693
+    f2:SetModel(165693)
     f2:SetWidth(60)
     f2:SetHeight(60)
     f2.transformations = {0.02,0.0168,0, rad(90), rad(270), rad(270), 0.006}
@@ -132,8 +132,8 @@ function f:Create()
     f.layer2 = f2
 
     local f3 = CreateFrame("PlayerModel", "CursorFinderLayer3",f)
-    f3.model_path = "spells/lightningbolt_missile.m2"
-    f3:SetModel("spells/lightningbolt_missile.m2")
+    f3.model_path = 166497
+    f3:SetModel(166497)
     f3:SetWidth(30)
     f3:SetHeight(30)
     -- f3:SetTransform(0.02,0.0168,0, rad(90), rad(270), rad(270), 0.006)
