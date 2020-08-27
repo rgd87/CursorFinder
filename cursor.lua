@@ -81,7 +81,7 @@ local Redraw = function(self)
 end
 
 local Clear = function(self)
-    self:SetModel("spells/lightningbolt_missile.m2")
+    self:SetModel(166497)
     self:ClearTransform()
 end
 
@@ -145,13 +145,65 @@ function f:Create()
 
     f.layer3 = f3
 
+    -- local f1 = CreateFrame("Frame", "CursorFinderLayer1",f)
+    -- f1:SetWidth(50)
+    -- f1:SetHeight(50)
+    -- f1:SetPoint("CENTER",0, 0)
+    -- f1:SetFrameStrata("BACKGROUND")
+    -- local f1t = f1:CreateTexture("$parentTexture", "BACKGROUND", nil, -2)
+    -- -- f1t:SetAllPoints(f1)
+    -- f1t:SetPoint("TOPLEFT", f1, "TOPLEFT",10,-10)
+    -- f1t:SetSize(40,40)
+    -- -- f1t:SetTexture(165638) --spells/aurarune_a.blp
+    -- f1t:SetTexture("Interface\\AddOns\\NugComboBar\\tex\\AURARUNE_A.tga")
+    -- f1t:SetBlendMode("ADD")
+
+    -- f.layer1texture = f1t
+
+
     local previousX
     local previousY
-    f:SetScript("OnUpdate", function(self, elapsed)
+    local currentRotation = 0
+    local cV = 0.02
+    local sqrt = math.sqrt
+    local _elapsed = 0
+    f:SetScript("OnUpdate", function(self, time)
         local cursorX, cursorY = GetCursorPosition()
-        if cursorX == previousX and cursorY == previousY then
-            return
-        end
+
+        -- _elapsed = _elapsed + time
+        -- if _elapsed > 0.05 then
+
+
+        --     -- if cursorX == previousX and cursorY == previousY then
+        --     --     return
+        --     -- end
+
+        --     if previousX then
+        --         local dx = cursorX - previousX
+        --         local dy = cursorY - previousY
+        --         local d = sqrt(dx*dx + dy*dy)
+        --         local a = d/(_elapsed*1000)
+        --         -- print(a)
+        --         local mV = cV
+        --         local mul = 1+a*2
+        --         if d > 1 then
+        --             mV = mV * mul
+        --         end
+        --         if mul > 1 then
+        --             self.layer1texture:SetScale(mul)
+        --         else
+        --             self.layer1texture:SetScale(1)
+        --         end
+
+        --         currentRotation = currentRotation + cV + mV
+        --         self.layer1texture:SetRotation(currentRotation)
+        --     end
+
+        --     _elapsed = 0
+
+        --     previousX = cursorX
+        --     previousY = cursorY
+        -- end
 
         local uiScale = 1/UIParent:GetEffectiveScale()
 
